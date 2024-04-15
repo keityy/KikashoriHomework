@@ -38,7 +38,5 @@ def line_func(x,n,c):
 line_point1=[X_MIN, ]
 
 plt.scatter(x,y,c='k')
-plt.plot([X_MIN, X_MAX], [line_func(X_MIN,smallest_eigenvector,c),line_func(X_MAX,smallest_eigenvector)]) #(0, b)地点から(xの最大値,ax + b)地点までの線
+plt.plot([X_MIN, X_MAX], [line_func(X_MIN,smallest_eigenvector,c),line_func(X_MAX,smallest_eigenvector,c)]) #(0, b)地点から(xの最大値,ax + b)地点までの線
 plt.show()
-
-
