@@ -72,11 +72,39 @@ errors = CalcError(points).calc(smallest_eigenvector, c)
 print(f"errors:{errors} \n len(erros):{len(errors)}")
 
 print(f"total:{np.sum(transposed_points, axis=0)}")
+
 weight_point1= weight_func_for_gm(errors, errors[0]) * transposed_points[0]
 print(f"weight_point1:{weight_point1}")
 
-weighted_points = [weight_func_for_gm(errors, errors[k]) * transposed_points[k] for k in range(len(points))]
+weighted_points = [weight_func_for_gm(errors, errors[k]) * transposed_points[k] for k in range(len(transposed_points))]
+weighted_points = np.array(weighted_points)
+print(transposed_points)
+for k in range(len(transposed_points)):
+    print(weight_func_for_gm(errors, errors[k]),transposed_points[k])
 print(f"weighted_points:{weighted_points}")
+sum_of_weightedpoints = np.sum(weighted_points, axis=0)
+print(f"sum_of_weightedpoints:{sum_of_weightedpoints}")
+
+weighted_errors = [weight_func_for_gm(errors, errors[k]) for k in range(len(errors))]
+print(f"weighted_errors:{weighted_errors}")
+print(f"len(weighted_errors):{len(weighted_errors)}")
+sum_of_weighted_errors = np.sum(weighted_errors)
+print(f"sum_of_weighted_errors:{sum_of_weighted_errors}")
+
+weighted_mean = sum_of_weightedpoints / sum_of_weighted_errors
+print(f"weighted_mean:{weighted_mean}")
+
+deviation_from_mean = weighted_points-weighted_mean
+print(f"deviation_from_mean:{deviation_from_mean}")
+
+print(f"deviation_from_mean[0]:{deviation_from_mean[0]}")
+print(f"np.transpose(deviation_from_mean[0]):{np.transpose(deviation_from_mean[0])}")
+print(f"deviation_from_mean[0].reshape(2,1):{deviation_from_mean[0].reshape(2,1)}")
+print(f"deviation_from_mean[0].reshape(1,2):{deviation_from_mean[0].reshape(1,2)}")
+#これ使う．Mにする
+print(f"deviation_from_mean[0].reshape(2,1) @ deviation_from_mean[0].reshape(1,2):{deviation_from_mean[0].reshape(2,1) @ deviation_from_mean[0].reshape(1,2)}")
+print(f"1:{deviation_from_mean[0] @ np.transpose(deviation_from_mean[0])}")
+print(f"2:{np.transpose(deviation_from_mean[0]) @ deviation_from_mean[0]}")
 
 
 # weighted_mean = [weight_func_for_gm(errors, errors[k]) * transposed_points[k] for k in range(len(points))]
