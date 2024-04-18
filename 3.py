@@ -106,6 +106,11 @@ print(f"deviation_from_mean[0].reshape(2,1) @ deviation_from_mean[0].reshape(1,2
 print(f"1:{deviation_from_mean[0] @ np.transpose(deviation_from_mean[0])}")
 print(f"2:{np.transpose(deviation_from_mean[0]) @ deviation_from_mean[0]}")
 
+for k in range(len(errors)):
+    sumof_weighted_deviation_matrix = weighted_errors[k] * (deviation_from_mean[k].reshape(2,1) @ deviation_from_mean[k].reshape(1,2))
+
+weighted_covariance_matrix = sumof_weighted_deviation_matrix / sum_of_weighted_errors
+print(f"weighted_covariance_matrix:{weighted_covariance_matrix}")
 
 # weighted_mean = [weight_func_for_gm(errors, errors[k]) * transposed_points[k] for k in range(len(points))]
 # print(weighted_mean)
