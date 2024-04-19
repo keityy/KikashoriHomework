@@ -1,3 +1,6 @@
+# Purpose: 2次元の点群に対して、最小二乗法を用いて直線を求めるプログラム
+# デバッグ用．
+
 import numpy as np
 import matplotlib.pyplot as plt
 
