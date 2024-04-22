@@ -178,15 +178,17 @@ if __name__ == "__main__":
     biggest_inlier_points = np.transpose(biggest_inlier_points)
     
     plt.scatter(x,y,c='k')
-    #plot inliers as red dots
-    plt.scatter(biggest_inlier_points[0,:],biggest_inlier_points[1,:],c='r')
+
     #plot the estimated line by GM (IRLS)
     # plt.plot([X_MIN, X_MAX], [line_func(X_MIN, smallest_eigenvector, c),line_func(X_MAX, smallest_eigenvector, c)]) #(0, b)地点から(xの最大値,ax + b)地点までの線
+    
     #plot the estimated line by RANSAC
     plt.plot([X_MIN, X_MAX], [line_func(X_MIN, ransac_n, ransac_c),line_func(X_MAX, ransac_n, ransac_c)]) #(0, b)地点から(xの最大値,ax + b)地点までの線
     #plot the area of inliers as dotted line
     plt.plot([X_MIN, X_MAX], [line_func(X_MIN, ransac_n, ransac_c)+delta,line_func(X_MAX, ransac_n, ransac_c)+delta], linestyle='dotted')
     plt.plot([X_MIN, X_MAX], [line_func(X_MIN, ransac_n, ransac_c)-delta,line_func(X_MAX, ransac_n, ransac_c)-delta], linestyle='dotted')
-
+    #plot inliers as red dots
+    plt.scatter(biggest_inlier_points[0,:],biggest_inlier_points[1,:],c='r')
+    
     plt.show()
     plt.close()
