@@ -144,9 +144,64 @@ class CalcRANSAC:
         biggest_inlier_points = np.array([self.transposed_points[biggest_inliers[i]] for i in range(len(biggest_inliers))])
         return best_n, best_c, biggest_inlier_points
 
+class CalcMSAC:
+    def __init__(self, points, delta, max_iterations):
+        self.transposed_points = np.transpose(points)
+        self.delta = delta # threshold for inliers
+        self.max_iterations = max_iterations
+    
+    def _error_func(self, n, c, x1, x2):
+        n1, n2 = n[0], n[1]
+        error = n1 * x1 + n2 * x2 + c
+        return error
+    
+    def calc_error(self, n, c):
+        errors = []
+        x = self.transposed_points
+        for x_k in x:
+            x1, x2 = x_k[0], x_k[1]
+            error = self._error_func(n, c, x1, x2)
+            errors.append(error)
+        return errors
+    
+    def _loss_func(self, error):
+        if abs(error) > self.delta:
+            loss = self.delta**2
+        else:
+            loss = error**2
+        return loss
+
+    def calc_total_loss(self, errors):
+        loss = 0
+        for error in errors:
+            loss += self._loss_func(error)
+        return loss
+    
+    def calculation(self):
+        # MSAC
+        # 1. Select random pare of points
+        # 2. Fit a line to the selected points
+        # 3. Calculate the error and loss for all points
+        # 4. Update the best model
+        x=self.transposed_points
+        for i in range(self.max_iterations):
+            if i == 0:
+                biggest_total_loss = 100000
+            random_points_index = np.random.choice(range(len(self.transposed_points)), 2)
+            points = [self.transposed_points[random_points_index[0]], self.transposed_points[random_points_index[1]]]
+            points_transposed = np.transpose(points)
+            n,c = ls_estimator(points_transposed)
+            errors = self.calc_error(n, c)
+            total_loss = self.calc_total_loss(errors)
+            if total_loss < biggest_total_loss:
+                biggest_total_loss = total_loss
+                best_n = n
+                best_c = c
+        return best_n, best_c, biggest_total_loss
+
 if __name__ == "__main__":
     points = np.loadtxt("point_set_with_outliers.txt")
-    estimation_type="RANSAC" # chose from "LS", "GM", "RANSAC", "MSAC"
+    estimation_type="LS" # chose from "LS", "GM", "RANSAC", "MSAC"
     
     #used for plotting
     x = points[0,:]
@@ -181,8 +236,21 @@ if __name__ == "__main__":
         ransac = CalcRANSAC(points, delta, max_iterations)
         ransac_n, ransac_c, biggest_inlier_points = ransac.process_calculation()
         biggest_inlier_points = np.transpose(biggest_inlier_points)
+
+    #MSAC
+    if estimation_type == "MSAC":
+        delta = 1
+        max_iterations = 100
+        np.random.seed(0)
+        msac = CalcMSAC(points, delta, max_iterations)
+        msac_n, msac_c, biggest_total_loss = msac.calculation()
     
     plt.scatter(x,y,c='k')
+
+    if estimation_type == "LS":
+        plt.plot([X_MIN, X_MAX], [line_func(X_MIN,ls_smallest_eigenvector,ls_c),line_func(X_MAX,ls_smallest_eigenvector,ls_c)]) #(0, b)地点から(xの最大値,ax + b)地点までの線
+        #set graph title
+        plt.title(f"Estimated line by LS")
 
     if estimation_type == "GM":
     #plot the estimated line by GM (IRLS)
@@ -200,6 +268,13 @@ if __name__ == "__main__":
         plt.scatter(biggest_inlier_points[0,:],biggest_inlier_points[1,:],c='r')
         #set graph title
         plt.title(f"Estimated line by RANSAC")
+
+
+    if estimation_type == "MSAC":
+        #plot the estimated line by MSAC
+        plt.plot([X_MIN, X_MAX], [line_func(X_MIN, msac_n, msac_c),line_func(X_MAX, msac_n, msac_c)])
+        #set graph title
+        plt.title(f"Estimated line by MSAC")
 
     plt.show()
     plt.close()
