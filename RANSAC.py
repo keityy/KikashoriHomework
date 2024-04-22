@@ -24,7 +24,7 @@ def ls_estimator(points):
     smallest_eigenvalue = np.min(eigenvalues)
     index_of_smallest_eigenvalue = np.argmin(eigenvalues)
     smallest_eigenvector = eigenvectors[:, index_of_smallest_eigenvalue]
-    c = - np.dot(ls_smallest_eigenvector,mean_point)
+    c = - np.dot(smallest_eigenvector,mean_point)
     return smallest_eigenvector, c
 
 class RobustLineEstimator_GM:
@@ -126,8 +126,8 @@ class CalcRANSAC:
             if i == 0:
                 biggest_inliers_num = 0
                 biggest_inliers = []
-            points = np.random.choice(x, 2)
-            x1, x2 = points[0], points[1]
+            random_points_index = np.random.choice(range(len(self.transposed_points)), 2)
+            points = [self.transposed_points[random_points_index[0]], self.transposed_points[random_points_index[1]]]
             points_transposed = np.transpose(points)
             n,c = ls_estimator(points_transposed)
             errors = self.calc_error(n, c)
@@ -154,29 +154,32 @@ if __name__ == "__main__":
     X_MAX = 10
 
     #Least square method
-    ls_smallest_eigenvector, ls_c = ls_estimator(points)
+    if False:
+        ls_smallest_eigenvector, ls_c = ls_estimator(points)
     
     #GM estimation
-    estimator = RobustLineEstimator_GM(points)
-    for i in range(10):
-        if i == 0:
-            smallest_eigenvector = ls_smallest_eigenvector
-            c = ls_c
-            lines = []
-        else:
-            smallest_eigenvector, c = estimator.calc_estimation_line(smallest_eigenvector, c)
-            print(f"i:{i} \n smallest_eigenvector:{smallest_eigenvector} \n c:{c}")
+    if False:
+        estimator = RobustLineEstimator_GM(points)
+        for i in range(10):
+            if i == 0:
+                smallest_eigenvector = ls_smallest_eigenvector
+                c = ls_c
+                lines = []
+            else:
+                smallest_eigenvector, c = estimator.calc_estimation_line(smallest_eigenvector, c)
+                print(f"i:{i} \n smallest_eigenvector:{smallest_eigenvector} \n c:{c}")
     
     #RANSAC
     delta = 1
     max_iterations = 100
+    np.random.seed(0)
     ransac = CalcRANSAC(points, delta, max_iterations)
     ransac_n, ransac_c, biggest_inlier_points = ransac.process_calculation()
     biggest_inlier_points = np.transpose(biggest_inlier_points)
     
     plt.scatter(x,y,c='k')
     #plot inliers as red dots
-    plt.scatter(biggest_inlier_points[:,0],biggest_inlier_points[:,1],c='r')
+    plt.scatter(biggest_inlier_points[0,:],biggest_inlier_points[1,:],c='r')
     #plot the estimated line by GM (IRLS)
     # plt.plot([X_MIN, X_MAX], [line_func(X_MIN, smallest_eigenvector, c),line_func(X_MAX, smallest_eigenvector, c)]) #(0, b)地点から(xの最大値,ax + b)地点までの線
     #plot the estimated line by RANSAC
