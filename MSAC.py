@@ -201,7 +201,7 @@ class CalcMSAC:
 
 if __name__ == "__main__":
     points = np.loadtxt("point_set_with_outliers.txt")
-    estimation_type="LS" # chose from "LS", "GM", "RANSAC", "MSAC"
+    estimation_type="GM" # chose from "LS", "GM", "RANSAC", "MSAC"
     
     #used for plotting
     x = points[0,:]

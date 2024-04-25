@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-points = np.loadtxt("original_point_set.txt")
+# points = np.loadtxt("original_point_set.txt")
+points = np.loadtxt("point_set_with_outliers.txt")
 x = points[0,:]
 y = points[1,:]
 X_MIN = 0
